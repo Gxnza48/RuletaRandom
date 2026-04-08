@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-100 min-h-screen font-['Inter',_sans-serif];
+    background: radial-gradient(circle at top left, #1e293b 0%, #0f172a 100%);
+  }
+
+  h1, h2, h3, .font-heading {
+    @apply font-['Outfit',_sans-serif];
+  }
+}
+
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-xl;
+}
+
+.premium-gradient {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400;
+}
