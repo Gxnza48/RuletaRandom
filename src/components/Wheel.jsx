@@ -7,7 +7,7 @@ const COLORS = [
   '#10b981', '#a855f7', '#f43f5e', '#3b82f6'
 ]
 
-const Wheel = ({ participants, onComplete, isSpinning, setIsSpinning }) => {
+const Wheel = ({ participants, onComplete, isSpinning, setIsSpinning, isDark }) => {
   const canvasRef = useRef(null)
   const wheelRef = useRef(null)
   const rotationRef = useRef(0)
@@ -79,16 +79,15 @@ const Wheel = ({ participants, onComplete, isSpinning, setIsSpinning }) => {
 
     setIsSpinning(true)
     
+    // GSAP Performance optimization for 144fps+
+    gsap.ticker.fps(240) // Allow up to 240fps for high refresh rate monitors
+    
     const count = participants.length
     const winnerIndex = Math.floor(Math.random() * count)
     const angleStep = 360 / count
     
-    // Calculate final rotation
-    // We want the winner index to stop at the top (which is -90 degrees in canvas coords, or 3 o'clock is 0)
-    // The arrow is usually at the top or right. Let's assume arrow is at the top (negative 90 deg)
-    // Angle in degrees for winner segment center
     const segmentCenter = (winnerIndex * angleStep) + (angleStep / 2)
-    const targetRotation = 360 * 5 + (360 - segmentCenter) + 270 // 5 full turns + target
+    const targetRotation = 360 * 10 + (360 - segmentCenter) + 270 // 10 full turns for more speed feel
     
     rotationRef.current += targetRotation
 
@@ -106,15 +105,17 @@ const Wheel = ({ participants, onComplete, isSpinning, setIsSpinning }) => {
     <div className="flex flex-col items-center gap-8">
       <div className="relative group">
         {/* Glow effect */}
-        <div className={`absolute -inset-4 rounded-full bg-indigo-500/20 blur-3xl transition-opacity duration-1000 ${isSpinning ? 'opacity-100 animate-pulse' : 'opacity-0'}`}></div>
+        <div className={`absolute -inset-4 rounded-full blur-3xl transition-opacity duration-1000 ${isSpinning ? 'opacity-100 animate-pulse' : 'opacity-0'} ${isDark ? 'bg-green-500/10' : 'bg-green-500/30'}`}></div>
         
-        {/* Pointer */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 z-10">
-          <div className="w-8 h-10 bg-white clip-path-triangle shadow-xl"></div>
-          <div className="w-8 h-10 absolute inset-0 bg-indigo-400 opacity-50 blur-sm"></div>
+        {/* Pointer (Arrow) */}
+        <div className="absolute top-[-10px] left-1/2 -translate-x-1/2 z-10 drop-shadow-xl">
+          <svg width="40" height="50" viewBox="0 0 40 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 50L0 0H40L20 50Z" fill={isDark ? "#22c55e" : "#16a34a"} />
+            <path d="M20 40L6 4H34L20 40Z" fill="white" fillOpacity="0.9" />
+          </svg>
         </div>
 
-        <div ref={wheelRef} className="relative z-0 shadow-2xl rounded-full overflow-hidden border-8 border-slate-900/50">
+        <div ref={wheelRef} className={`relative z-0 shadow-2xl rounded-full overflow-hidden border-8 transition-colors duration-500 ${isDark ? 'border-white/5' : 'border-white'}`}>
           <canvas 
             ref={canvasRef} 
             width={500} 
