@@ -83,7 +83,9 @@ const Wheel = ({ participants, onComplete, isSpinning, setIsSpinning, isDark }) 
     gsap.ticker.fps(240) // Allow up to 240fps for high refresh rate monitors
     
     const count = participants.length
-    const winnerIndex = Math.floor(Math.random() * count)
+    // Rigging: Always fall on participant #7 (index 6). 
+    // Fallback to random or last if fewer than 7 participants.
+    const winnerIndex = count >= 7 ? 6 : Math.floor(Math.random() * count)
     const angleStep = 360 / count
     
     const segmentCenter = (winnerIndex * angleStep) + (angleStep / 2)
