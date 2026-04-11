@@ -9,6 +9,8 @@ function App() {
   const [winner, setWinner] = useState(null)
   const [isSpinning, setIsSpinning] = useState(false)
   const [isDark, setIsDark] = useState(true)
+  const [plannedSequence, setPlannedSequence] = useState([])
+  const [showSequenceUI, setShowSequenceUI] = useState(false)
 
   const handleSpinComplete = (winnerName) => {
     setWinner(winnerName)
@@ -16,6 +18,15 @@ function App() {
   }
 
   const reset = () => {
+    if (winner) {
+      // Remove winner from participants
+      setParticipants(prev => prev.filter(p => p.name !== winner))
+      // Remove winner from sequence if it was next
+      setPlannedSequence(prev => {
+        if (prev[0] === winner) return prev.slice(1)
+        return prev
+      })
+    }
     setWinner(null)
     setIsSpinning(false)
   }
@@ -60,7 +71,7 @@ function App() {
                 isSpinning={isSpinning}
                 setIsSpinning={setIsSpinning}
                 isDark={isDark}
-                isRigged={isDark}
+                plannedSequence={plannedSequence}
               />
             </div>
           </section>
@@ -69,6 +80,57 @@ function App() {
         {winner && (
           <WinnerReveal winner={winner} onReset={reset} isDark={isDark} />
         )}
+        
+        <div className="mt-12 w-full max-w-md">
+          <button 
+            onClick={() => setShowSequenceUI(!showSequenceUI)}
+            className={`text-sm flex items-center gap-2 opacity-50 hover:opacity-100 transition-opacity mx-auto mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}
+          >
+            <Trophy size={16} />
+            {showSequenceUI ? "Ocultar Planificador" : "Configurar Ganadores (Opcional)"}
+          </button>
+
+          {showSequenceUI && (
+            <div className={`p-8 rounded-[2.5rem] border animate-in slide-in-from-bottom-6 duration-700 ${isDark ? 'bg-white/5 border-white/10 backdrop-blur-xl' : 'bg-white border-slate-200 shadow-2xl'}`}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 rounded-xl bg-green-500/20">
+                  <Trophy className="text-green-500" size={20} />
+                </div>
+                <div>
+                  <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-800'}`}>Secuencia de Ganadores</h3>
+                  <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Controla exactamente quién gana y en qué orden.</p>
+                </div>
+              </div>
+              
+              <div className="relative group/textarea">
+                <textarea 
+                  className={`w-full h-40 p-5 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-mono text-sm leading-relaxed resize-none ${isDark ? 'bg-black/40 border-white/10 text-white placeholder:text-slate-700' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-300'}`}
+                  placeholder={"Escribe nombres en orden...\nEjemplo:\nJuan\nMaria\nPedro"}
+                  value={plannedSequence.join('\n')}
+                  onChange={(e) => setPlannedSequence(e.target.value.split('\n').filter(s => s.trim() !== ''))}
+                />
+                <div className="absolute top-4 right-4 flex flex-col items-end gap-1 opacity-0 group-hover/textarea:opacity-100 transition-opacity pointer-events-none">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-green-500/50">Editor de Orden</span>
+                </div>
+              </div>
+
+              <div className="mt-6 flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/5 bg-white/5">
+                  <div className={`w-2 h-2 rounded-full ${plannedSequence.length > 0 ? 'bg-green-500 animate-pulse' : 'bg-slate-500'}`}></div>
+                  <span className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                    {plannedSequence.length > 0 ? `${plannedSequence.length} EN COLA` : 'MODO AZAR'}
+                  </span>
+                </div>
+                
+                {plannedSequence.length > 0 && (
+                  <div className={`text-xs italic ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                    Próximo: <span className="font-bold text-green-500">{plannedSequence[0]}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
         
         <footer className={`mt-20 ${isDark ? 'text-slate-600' : 'text-slate-400'} text-sm`}>
           &copy; 2026 Ruleta de Sorteo Premium. Todos los derechos reservados.

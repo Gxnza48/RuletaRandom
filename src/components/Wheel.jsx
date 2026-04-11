@@ -7,7 +7,7 @@ const COLORS = [
   '#10b981', '#a855f7', '#f43f5e', '#3b82f6'
 ]
 
-const Wheel = ({ participants, onComplete, isSpinning, setIsSpinning, isDark, isRigged }) => {
+const Wheel = ({ participants, onComplete, isSpinning, setIsSpinning, isDark, plannedSequence }) => {
   const canvasRef = useRef(null)
   const wheelRef = useRef(null)
   const rotationRef = useRef(0)
@@ -15,6 +15,7 @@ const Wheel = ({ participants, onComplete, isSpinning, setIsSpinning, isDark, is
   // Draw the wheel segments
   useEffect(() => {
     const canvas = canvasRef.current
+    if (!canvas) return
     const ctx = canvas.getContext('2d')
     const size = 500
     const centerX = size / 2
@@ -83,9 +84,19 @@ const Wheel = ({ participants, onComplete, isSpinning, setIsSpinning, isDark, is
     gsap.ticker.fps(240) // Allow up to 240fps for high refresh rate monitors
     
     const count = participants.length
-    // Rigging: Always fall on participant #7 (index 6) if configured to.
-    // Fallback to random if rigged is off or fewer than 7 participants.
-    const winnerIndex = (isRigged && count >= 7) ? 6 : Math.floor(Math.random() * count)
+    
+    // Logic for sequence
+    let winnerIndex = -1
+    if (plannedSequence && plannedSequence.length > 0) {
+      const nextWinnerName = plannedSequence[0]
+      winnerIndex = participants.findIndex(p => p.name === nextWinnerName)
+    }
+
+    // Fallback to random if not in sequence or sequence empty
+    if (winnerIndex === -1) {
+      winnerIndex = Math.floor(Math.random() * count)
+    }
+
     const angleStep = 360 / count
     
     // Calculate precise target rotation to land at the top (270 degrees)
