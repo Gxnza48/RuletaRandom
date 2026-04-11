@@ -8,7 +8,6 @@ function App() {
   const [participants, setParticipants] = useState([])
   const [winner, setWinner] = useState(null)
   const [isSpinning, setIsSpinning] = useState(false)
-  const [isDark, setIsDark] = useState(true)
   const [plannedSequence, setPlannedSequence] = useState([])
   const [showSequenceUI, setShowSequenceUI] = useState(false)
 
@@ -31,24 +30,15 @@ function App() {
     setIsSpinning(false)
   }
 
-  const toggleTheme = () => setIsDark(!isDark)
-
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'bg-black text-white' : 'bg-slate-50 text-slate-900'}`}>
+    <div className="min-h-screen transition-colors duration-500 bg-black text-white">
       <div className="max-w-6xl mx-auto py-8 px-4 flex flex-col items-center">
-        <button 
-          onClick={toggleTheme}
-          className={`absolute top-6 right-6 p-3 rounded-2xl transition-all hover:scale-110 active:scale-95 shadow-lg relative ${isDark ? 'bg-white/5 border border-white/10 text-yellow-400' : 'bg-white border border-slate-200 text-indigo-600'}`}
-          title={isDark ? "Cambiar a Modo Claro" : "Cambiar a Modo Oscuro"}
-        >
-          {isDark ? <Sun size={24} /> : <Moon size={24} />}
-        </button>
-
-        <header className="mb-12 text-center">
+        
+        <header className="mb-12 text-center text-white">
           <h1 className="text-5xl md:text-7xl font-bold mb-4 tracking-tight">
             <span className="text-gradient">Ruleta de Sorteo</span>
           </h1>
-          <p className={`${isDark ? 'text-slate-400' : 'text-slate-500'} text-lg`}>
+          <p className="text-slate-400 text-lg">
             Sorteos rápidos, justos y visualmente increíbles.
           </p>
         </header>
@@ -59,7 +49,7 @@ function App() {
               participants={participants} 
               setParticipants={setParticipants} 
               disabled={isSpinning}
-              isDark={isDark}
+              isDark={true}
             />
           </section>
 
@@ -70,7 +60,7 @@ function App() {
                 onComplete={handleSpinComplete} 
                 isSpinning={isSpinning}
                 setIsSpinning={setIsSpinning}
-                isDark={isDark}
+                isDark={true}
                 plannedSequence={plannedSequence}
               />
             </div>
@@ -78,38 +68,38 @@ function App() {
         </main>
 
         {winner && (
-          <WinnerReveal winner={winner} onReset={reset} isDark={isDark} />
+          <WinnerReveal winner={winner} onReset={reset} isDark={true} />
         )}
         
         <div className="mt-12 w-full max-w-md">
           <button 
             onClick={() => setShowSequenceUI(!showSequenceUI)}
-            className={`text-sm flex items-center gap-2 opacity-50 hover:opacity-100 transition-opacity mx-auto mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}
+            className="text-sm flex items-center gap-2 opacity-50 hover:opacity-100 transition-opacity mx-auto mb-4 text-white"
           >
             <Trophy size={16} />
             {showSequenceUI ? "Ocultar Planificador" : "Configurar Ganadores (Opcional)"}
           </button>
 
           {showSequenceUI && (
-            <div className={`p-8 rounded-[2.5rem] border animate-in slide-in-from-bottom-6 duration-700 ${isDark ? 'bg-white/5 border-white/10 backdrop-blur-xl' : 'bg-white border-slate-200 shadow-2xl'}`}>
+            <div className="p-8 rounded-[2.5rem] border animate-in slide-in-from-bottom-6 duration-700 bg-white/5 border-white/10 backdrop-blur-xl">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 rounded-xl bg-green-500/20">
                   <Trophy className="text-green-500" size={20} />
                 </div>
                 <div>
-                  <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-800'}`}>Secuencia de Ganadores</h3>
-                  <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Controla exactamente quién gana y en qué orden.</p>
+                  <h3 className="text-xl font-bold text-white">Secuencia de Ganadores</h3>
+                  <p className="text-xs text-slate-400">Controla exactamente quién gana y en qué orden.</p>
                 </div>
               </div>
               
               <div className="relative group/textarea">
                 <textarea 
-                  className={`w-full h-40 p-5 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-mono text-sm leading-relaxed resize-none ${isDark ? 'bg-black/40 border-white/10 text-white placeholder:text-slate-700' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-300'}`}
+                  className="w-full h-40 p-5 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-mono text-sm leading-relaxed resize-none bg-black/40 border-white/10 text-white placeholder:text-slate-700"
                   placeholder={"Escribe nombres en orden...\nEjemplo:\nJuan\nMaria\nPedro"}
                   value={plannedSequence.join('\n')}
                   onChange={(e) => setPlannedSequence(e.target.value.split('\n').filter(s => s.trim() !== ''))}
                 />
-                <div className="absolute top-4 right-4 flex flex-col items-end gap-1 opacity-0 group-hover/textarea:opacity-100 transition-opacity pointer-events-none">
+                <div className="absolute top-4 right-4 flex flex-col items-end gap-1 opacity-100 transition-opacity pointer-events-none">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-green-500/50">Editor de Orden</span>
                 </div>
               </div>
@@ -117,13 +107,13 @@ function App() {
               <div className="mt-6 flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/5 bg-white/5">
                   <div className={`w-2 h-2 rounded-full ${plannedSequence.length > 0 ? 'bg-green-500 animate-pulse' : 'bg-slate-500'}`}></div>
-                  <span className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                  <span className="text-xs font-bold uppercase tracking-widest text-slate-300">
                     {plannedSequence.length > 0 ? `${plannedSequence.length} EN COLA` : 'MODO AZAR'}
                   </span>
                 </div>
                 
                 {plannedSequence.length > 0 && (
-                  <div className={`text-xs italic ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                  <div className="text-xs italic text-slate-500">
                     Próximo: <span className="font-bold text-green-500">{plannedSequence[0]}</span>
                   </div>
                 )}
@@ -132,7 +122,7 @@ function App() {
           )}
         </div>
         
-        <footer className={`mt-20 ${isDark ? 'text-slate-600' : 'text-slate-400'} text-sm`}>
+        <footer className="mt-20 text-slate-600 text-sm">
           &copy; 2026 Ruleta de Sorteo Premium. Todos los derechos reservados.
         </footer>
       </div>
