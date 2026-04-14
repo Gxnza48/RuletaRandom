@@ -7,7 +7,7 @@ const COLORS = [
   '#10b981', '#a855f7', '#f43f5e', '#3b82f6'
 ]
 
-const Wheel = ({ participants, onComplete, isSpinning, setIsSpinning, isDark, plannedSequence }) => {
+const Wheel = ({ participants, onComplete, isSpinning, setIsSpinning, isDark }) => {
   const canvasRef = useRef(null)
   const wheelRef = useRef(null)
   const rotationRef = useRef(0)
@@ -81,21 +81,12 @@ const Wheel = ({ participants, onComplete, isSpinning, setIsSpinning, isDark, pl
     setIsSpinning(true)
     
     // GSAP Performance optimization for 144fps+
-    gsap.ticker.fps(240) // Allow up to 240fps for high refresh rate monitors
+    gsap.ticker.fps(240)
     
     const count = participants.length
     
-    // Logic for sequence
-    let winnerIndex = -1
-    if (plannedSequence && plannedSequence.length > 0) {
-      const nextWinnerName = plannedSequence[0]
-      winnerIndex = participants.findIndex(p => p.name === nextWinnerName)
-    }
-
-    // Fallback to random if not in sequence or sequence empty
-    if (winnerIndex === -1) {
-      winnerIndex = Math.floor(Math.random() * count)
-    }
+    // Purely random winner selection
+    const winnerIndex = Math.floor(Math.random() * count)
 
     const angleStep = 360 / count
     

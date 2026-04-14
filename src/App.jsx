@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Wheel from './components/Wheel'
 import ParticipantManager from './components/ParticipantManager'
 import WinnerReveal from './components/WinnerReveal'
-import { Trophy, Users, RotateCcw, Sun, Moon } from 'lucide-react'
 
 function App() {
   const [participants, setParticipants] = useState([])
   const [winner, setWinner] = useState(null)
   const [isSpinning, setIsSpinning] = useState(false)
-  const [plannedSequence, setPlannedSequence] = useState(['12', '3', '4', '16', '10', '14', '7', '9'])
 
   const handleSpinComplete = (winnerName) => {
     setWinner(winnerName)
@@ -17,13 +15,7 @@ function App() {
 
   const reset = () => {
     if (winner) {
-      // Remove winner from participants
       setParticipants(prev => prev.filter(p => p.name !== winner))
-      // Remove winner from sequence if it was next
-      setPlannedSequence(prev => {
-        if (prev[0] === winner) return prev.slice(1)
-        return prev
-      })
     }
     setWinner(null)
     setIsSpinning(false)
@@ -60,7 +52,6 @@ function App() {
                 isSpinning={isSpinning}
                 setIsSpinning={setIsSpinning}
                 isDark={true}
-                plannedSequence={plannedSequence}
               />
             </div>
           </section>
@@ -69,7 +60,6 @@ function App() {
         {winner && (
           <WinnerReveal winner={winner} onReset={reset} isDark={true} />
         )}
-        
 
         <footer className="mt-20 text-slate-600 text-sm">
           &copy; 2026 Ruleta de Sorteo Premium. Todos los derechos reservados.
